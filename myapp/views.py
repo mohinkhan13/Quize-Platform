@@ -22,3 +22,23 @@ def login(request):
             # Add your context variables here
         }
         return render(request, 'login.html', context)
+    
+def setting(request):
+    if request.method == 'POST':
+        # POST request handling logic
+        pass
+    else:
+        context = {
+            # Add your context variables here
+        }
+        return render(request, 'setting.html', context)
+    
+def profile(request):
+    if request.method == 'POST':
+        # POST request handling logic
+        pass
+    else:
+        context = {
+            # Add your context variables here
+        }
+        return render(request, 'profile.html', context)
