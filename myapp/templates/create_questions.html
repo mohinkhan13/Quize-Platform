@@ -28,8 +28,90 @@
     </div>
 </div>
 
-<div class="max-w-3xl mx-auto p-8 mb-10 bg-white border border-gray-300 rounded-lg shadow-lg dark:border-gray-700 dark:bg-gray-900">
-    <div class="flex flex-col items-center text-center space-y-8">   
+<div class="relative min-h-screen flex items-center justify-center ">
+    <!-- Card Container -->
+    <div class="w-full max-w-2xl p-8 bg-white bg-opacity-30 backdrop-blur-lg rounded-3xl shadow-lg border border-gray-300 transform transition duration-500 hover:scale-105">
+      <!-- Floating Labels Form -->
+      <div class="mb-6">
+        <div class="relative z-0 w-full mb-5">
+            
+          <input type="text" id="question-text" class="peer bg-transparent border-b-2 border-gray-300 text-gray-900 dark:text-white focus:outline-none focus:border-blue-600 block w-full p-2.5 appearance-none transition duration-200" placeholder="Enter Your Question" required />
+          
+        </div>
+      </div>
+  
+      <!-- Options -->
+      <div class="grid grid-cols-2 gap-6">
+        <div class="relative z-0 w-full mb-5">
+          <input type="text" id="option-a" class="peer bg-transparent border-b-2 border-gray-300 text-gray-900 dark:text-white focus:outline-none focus:border-blue-600 block w-full p-2.5 appearance-none transition duration-200" placeholder="Option A" required />
+        </div>
+        <div class="relative z-0 w-full mb-5">
+          <input type="text" id="option-b" class="peer bg-transparent border-b-2 border-gray-300 text-gray-900 dark:text-white focus:outline-none focus:border-blue-600 block w-full p-2.5 appearance-none transition duration-200" placeholder="Option B" required />          
+        </div>
+      </div>
+  
+      <div class="grid grid-cols-2 gap-6">
+        <div class="relative z-0 w-full mb-5">
+          <input type="text" id="option-c" class="peer bg-transparent border-b-2 border-gray-300 text-gray-900 dark:text-white focus:outline-none focus:border-blue-600 block w-full p-2.5 appearance-none transition duration-200" placeholder="Option C" required />          
+        </div>
+        <div class="relative z-0 w-full mb-5">
+          <input type="text" id="option-d" class="peer bg-transparent border-b-2 border-gray-300 text-gray-900 dark:text-white focus:outline-none focus:border-blue-600 block w-full p-2.5 appearance-none transition duration-200" placeholder="Option D" required />         
+        </div>
+      </div>
+  
+      <!-- Dropdown -->
+      <div class="relative z-0 w-full mb-5">
+        <select id="correct-answer" class="bg-transparent border-b-2 border-gray-300 text-gray-900 dark:text-white focus:outline-none focus:border-blue-600 block w-full p-2.5 appearance-none transition duration-200">
+          <option selected>Choose Correct Answer</option>
+          <option value="A">A</option>
+          <option value="B">B</option>
+          <option value="C">C</option>
+          <option value="D">D</option>
+        </select>
+      </div>
+  
+      <h1>True False</h1>
+      <div class="mb-6">
+        <div class="relative z-0 w-full mb-5">
+            
+          <input type="text" id="question-text" class="peer bg-transparent border-b-2 border-gray-300 text-gray-900 dark:text-white focus:outline-none focus:border-blue-600 block w-full p-2.5 appearance-none transition duration-200" placeholder="Enter Your Question" required />
+          
+        </div>
+      </div>
+  
+      <!-- Dropdown -->
+      <div class="relative z-0 w-full mb-5">
+        <select id="correct-answer" class="bg-transparent border-b-2 border-gray-300 text-gray-900 dark:text-white focus:outline-none focus:border-blue-600 block w-full p-2.5 appearance-none transition duration-200">
+          <option selected>Choose Correct Answer</option>
+          <option value="True">True</option>
+          <option value="False">False</option>          
+        </select>
+      </div>
+
+
+      <h1>Short Answer</h1>
+      <div class="mb-6">
+        <div class="relative z-0 w-full mb-5">
+            
+          <input type="text" id="question-text" class="peer bg-transparent border-b-2 border-gray-300 text-gray-900 dark:text-white focus:outline-none focus:border-blue-600 block w-full p-2.5 appearance-none transition duration-200" placeholder="Enter Your Question" required />
+          
+        </div>
+      </div>
+
+      <div class="mb-6">
+        <div class="relative z-0 w-full mb-5">
+            
+          <textarea class="peer bg-transparent border-b-2 border-gray-300 text-gray-900 dark:text-white focus:outline-none focus:border-blue-600 block w-full p-2.5 appearance-none transition duration-200" placeholder="Correct Answer"></textarea>
+          
+        </div>
+      </div>
+
+      <div class="mt-8">
+        <button class="w-full bg-blue-600 text-white p-4 rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 transition duration-300 ease-in-out transform hover:scale-105">
+          Create Exam
+        </button>
+      </div>
     </div>
-</div>
+  </div>
+  
 {% endblock main %}
