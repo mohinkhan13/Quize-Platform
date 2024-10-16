@@ -13,4 +13,5 @@ urlpatterns = [
     path('new-password/', new_password, name='new-password'),
     path('my-all-exams/', my_all_exams, name='my-all-exams'),
     path('create-exam/', create_exam, name='create-exam'),
+    path('create-questions/', create_questions, name='create-questions'),
 ]

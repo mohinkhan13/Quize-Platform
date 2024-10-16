@@ -97,3 +97,13 @@ def create_exam(request):
             # Add your context variables here
         }
         return render(request, 'create_exam.html', context)
+    
+def create_questions(request):
+    if request.method == 'POST':
+        # POST request handling logic
+        pass
+    else:
+        context = {
+            # Add your context variables here
+        }
+        return render(request, 'create_questions.html', context)
