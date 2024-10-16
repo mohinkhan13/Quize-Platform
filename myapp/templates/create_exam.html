@@ -6,8 +6,8 @@
         <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
             Create New Exam
         </h2>
-        <form class="mt-8 space-y-6" action="#">
-            
+        <form class="mt-8 space-y-6" method='POST' action="{% url "create-exam" %}">
+            {% csrf_token %}
                 <!-- Exam Name -->
             <div>
                 <label for="exam-name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Exam Name</label>
@@ -21,11 +21,11 @@
             </div>
             <div>
                 <label for="settings-language" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Select Type</label>
-                    <select id="settings-language" name="countries" class="bg-gray-50 border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
-                        <option>MCQ</option>
-                        <option>True/False</option>
-                        <option>Short Answer</option>
-                        <option>Mix</option>
+                    <select id="settings-language" name="exam_type" class="bg-gray-50 border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
+                        <option value='MCQ'>MCQ</option>
+                        <option value="TF">True/False</option>
+                        <option value="SA">Short Answer</option>
+                        <option value="MX">Mix</option>
                     </select>
             </div>
             <!-- Number of Questions -->
@@ -52,7 +52,7 @@
                 <h3 class="mb-5 text-lg font-medium text-gray-900 dark:text-white">Select Timer Setting For Exam</h3>
                 <ul class="grid w-full gap-6 md:grid-cols-2">
                     <li>
-                        <input type="radio" id="hosting-small" name="hosting" value="hosting-small" class="hidden peer" required />
+                        <input type="radio" id="hosting-small" name="time_setting" value="exam" class="hidden peer" required />
                         <label for="hosting-small" class="inline-flex items-center justify-between w-full p-5 text-gray-500 bg-white border border-gray-200 rounded-lg cursor-pointer dark:hover:text-gray-300 dark:border-gray-700 dark:peer-checked:text-blue-500 peer-checked:border-blue-600 peer-checked:text-blue-600 hover:text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700">                           
                             <div class="block">
                                 <div class="w-full text-lg font-semibold">Full Exam Time</div>
@@ -61,7 +61,7 @@
                         </label>
                     </li>
                     <li>
-                        <input type="radio" id="hosting-big" name="hosting" value="hosting-big" class="hidden peer">
+                        <input type="radio" id="hosting-big" name="time_setting" value="question" class="hidden peer">
                         <label for="hosting-big" class="inline-flex items-center justify-between w-full p-5 text-gray-500 bg-white border border-gray-200 rounded-lg cursor-pointer dark:hover:text-gray-300 dark:border-gray-700 dark:peer-checked:text-blue-500 peer-checked:border-blue-600 peer-checked:text-blue-600 hover:text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700">
                             <div class="block">
                                 <div class="w-full text-lg font-semibold">Single Question Time</div>
@@ -80,7 +80,7 @@
                                 <path fill-rule="evenodd" d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm11-4a1 1 0 1 0-2 0v4a1 1 0 0 0 .293.707l3 3a1 1 0 0 0 1.414-1.414L13 11.586V8Z" clip-rule="evenodd"/>
                             </svg>
                         </div>
-                        <input type="time" id="time" class="bg-gray-50 border leading-none border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" value="00:00" required />
+                        <input name="time" type="time" id="time" class="bg-gray-50 border leading-none border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" value="00:00" required />
                     </div>
             </div>
             <!-- Button -->

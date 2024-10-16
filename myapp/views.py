@@ -90,7 +90,6 @@ def my_all_exams(request):
 
 def create_exam(request):
     if request.method == 'POST':
-        # POST request handling logic
         pass
     else:
         context = {
