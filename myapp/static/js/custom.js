@@ -113,3 +113,111 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 });
+
+
+// -------------------------------------------------------
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    const mcqCountInput = document.getElementById('mcq-count');
+    const tfCountInput = document.getElementById('tf-count');
+    const mcqContainer = document.getElementById('mcq-container');
+    const tfContainer = document.getElementById('tf-container');
+    const maxQuestions = {{ exam.number_of_questions }}; // Dynamic value from the server
+    const warningMessage = document.getElementById('warning-message'); // Assume you have an element to show messages
+
+    // Function to update the warning message visibility
+    const updateWarningMessage = (isVisible) => {
+        warningMessage.style.display = isVisible ? 'block' : 'none';
+    };
+
+    // Generate MCQ questions based on input
+    mcqCountInput.addEventListener('input', function() {
+        const mcqCount = parseInt(mcqCountInput.value, 10) || 0;
+        const tfCount = parseInt(tfCountInput.value, 10) || 0;
+        const totalCount = mcqCount + tfCount;
+
+        mcqContainer.innerHTML = '';
+
+        if (totalCount > maxQuestions) {
+            updateWarningMessage(true);
+            return; // Exit if the total exceeds the maximum
+        } else {
+            updateWarningMessage(false);
+        }
+
+        for (let i = 1; i <= mcqCount; i++) {
+            const mcqHTML = `
+            <div class="mb-6 border p-4 rounded-md shadow-md bg-white dark:bg-gray-800">
+                <h3 class="text-lg font-semibold mb-2 dark:text-white">MCQ Question ${i}</h3>
+                <div class="relative z-0 w-full mb-5">
+                    <input type="text" id="mcq-question_${i}" name="question_${i}" class="peer bg-transparent border-b-2 border-gray-300 text-gray-900 dark:text-white focus:outline-none focus:border-blue-600 block w-full p-2.5 appearance-none transition duration-200" placeholder="Enter Your MCQ Question" required />
+                </div>
+                <div class="grid grid-cols-2 gap-6">
+                    <div class="relative z-0 w-full mb-5">
+                        <input type="text" id="mcq-option-a_${i}" name="option_a_${i}" class="peer bg-transparent border-b-2 border-gray-300 text-gray-900 dark:text-white focus:outline-none focus:border-blue-600 block w-full p-2.5 appearance-none transition duration-200" placeholder="Option A" required />
+                    </div>
+                    <div class="relative z-0 w-full mb-5">
+                        <input type="text" id="mcq-option-b_${i}" name="option_b_${i}" class="peer bg-transparent border-b-2 border-gray-300 text-gray-900 dark:text-white focus:outline-none focus:border-blue-600 block w-full p-2.5 appearance-none transition duration-200" placeholder="Option B" required />
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-6">
+                    <div class="relative z-0 w-full mb-5">
+                        <input type="text" id="mcq-option-c_${i}" name="option_c_${i}" class="peer bg-transparent border-b-2 border-gray-300 text-gray-900 dark:text-white focus:outline-none focus:border-blue-600 block w-full p-2.5 appearance-none transition duration-200" placeholder="Option C" required />
+                    </div>
+                    <div class="relative z-0 w-full mb-5">
+                        <input type="text" id="mcq-option-d_${i}" name="option_d_${i}" class="peer bg-transparent border-b-2 border-gray-300 text-gray-900 dark:text-white focus:outline-none focus:border-blue-600 block w-full p-2.5 appearance-none transition duration-200" placeholder="Option D" required />
+                    </div>
+                </div>
+                <div class="relative z-0 w-full mb-5">
+                    <select id="mcq-correct-answer_${i}" name="correct_answer_${i}" class="bg-transparent border-b-2 border-gray-300 text-gray-900 dark:text-white focus:outline-none focus:border-blue-600 block w-full p-2.5 appearance-none transition duration-200">
+                        <option selected>Choose Correct Answer</option>
+                        <option value="A">A</option>
+                        <option value="B">B</option>
+                        <option value="C">C</option>
+                        <option value="D">D</option>
+                    </select>
+                </div>
+            </div>`;
+
+            mcqContainer.innerHTML += mcqHTML;
+            console.log("Generated MCQ HTML:", mcqHTML);
+        }
+    });
+
+    // Generate True/False questions based on input
+    tfCountInput.addEventListener('input', function() {
+        const tfCount = parseInt(tfCountInput.value, 10) || 0;
+        const mcqCount = parseInt(mcqCountInput.value, 10) || 0;
+        const totalCount = mcqCount + tfCount;
+
+        tfContainer.innerHTML = '';
+
+        if (totalCount > maxQuestions) {
+            updateWarningMessage(true);
+            return; // Exit if the total exceeds the maximum
+        } else {
+            updateWarningMessage(false);
+        }
+
+        for (let i = 1; i <= tfCount; i++) {
+            const tfHTML = `
+                <div class="mb-6 border p-4 rounded-md shadow-md bg-white dark:bg-gray-800">
+                    <h3 class="text-lg font-semibold mb-2 dark:text-white">True/False Question ${i}</h3>
+                    <div class="relative z-0 w-full mb-5">
+                        <input type="text" id="tf-question_${i}" name="tf-question_${i}" class="peer bg-transparent border-b-2 border-gray-300 text-gray-900 dark:text-white focus:outline-none focus:border-blue-600 block w-full p-2.5 appearance-none transition duration-200" placeholder="Enter Your True/False Question" required />
+                    </div>
+                    <div class="relative z-0 w-full mb-5">
+                        <select id="tf-correct-answer_${i}" name="tf-correct-answer_${i}" class="bg-transparent border-b-2 border-gray-300 text-gray-900 dark:text-white focus:outline-none focus:border-blue-600 block w-full p-2.5 appearance-none transition duration-200">
+                            <option selected>Choose Correct Answer</option>
+                            <option value="True">True</option>
+                            <option value="False">False</option>
+                        </select>
+                    </div>
+                </div>`;
+
+            tfContainer.innerHTML += tfHTML;
+            console.log("Generated TF HTML:", tfHTML);
+        }
+    });
+});

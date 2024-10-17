@@ -39,6 +39,10 @@ class Exam(models.Model):
         ('question', 'Single Question Time'),
     ]
     
+    VISIBILITY_CHOICES = [
+        ('public', 'Public'),
+        ('private', 'Private'),
+    ]
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     exam_name = models.CharField(max_length=100)
     exam_subject = models.CharField(max_length=100)
@@ -46,8 +50,38 @@ class Exam(models.Model):
     number_of_questions = models.PositiveBigIntegerField()
     time_setting = models.CharField(max_length=50, choices=TIME_SETTING_CHOICES)
     exam_time = models.TimeField()
+    visibility = models.CharField(max_length=50,choices=VISIBILITY_CHOICES,default="private")
+    question_created = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.exam_name
+
+class MCQQuestion(models.Model):
+    exam = models.ForeignKey(Exam,on_delete=models.CASCADE)
+    question = models.TextField()
+    option_a = models.CharField(max_length=255)
+    option_b = models.CharField(max_length=255)
+    option_c = models.CharField(max_length=255)
+    option_d = models.CharField(max_length=255)
+    correct_answer = models.CharField(max_length=1)    
+
+    def __str__(self):
+        return self.question
+    
+class TrueFalseQuestion(models.Model):
+    exam = models.ForeignKey(Exam,on_delete=models.CASCADE)
+    question = models.CharField(max_length=255)
+    correct_answer = models.BooleanField()    
+
+    def __str__(self):
+        return self.question
+    
+class ShortAnswerQuestion(models.Model):
+    exam = models.ForeignKey(Exam,on_delete=models.CASCADE)
+    question = models.TextField()
+    correct_answer = models.TextField()
+
+    def __str__(self):
+        return self.question
