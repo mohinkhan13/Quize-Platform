@@ -1,6 +1,7 @@
 {% extends "header.html" %}
 
 {% block main %}
+{% load custom_tags %}
 <div class="p-4 bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700">
     <h1 class="text-xl font-semibold text-gray-900 sm:text-2xl dark:text-white mb-4">My All Exams</h1>
     <div class="flex justify-between items-center mb-4">
@@ -21,6 +22,7 @@
                     <th scope="col" class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400">Type</th>
                     <th scope="col" class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400">Questions</th>
                     <th scope="col" class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400">Time</th>
+                    <th scope="col" class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400">Status</th>
                     <th scope="col" class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400">Actions</th>
                 </tr>
             </thead>
@@ -33,7 +35,8 @@
                     <td class="p-4 text-base font-medium text-gray-900 dark:text-white">{{ e.exam_subject }}</td>
                     <td class="p-4 text-base font-medium text-gray-900 dark:text-white">{{ e.exam_type }}</td>
                     <td class="p-4 text-base font-medium text-gray-900 dark:text-white">{{ e.number_of_questions }}</td>
-                    <td class="p-4 text-base font-medium text-gray-900 dark:text-white">{{ e.exam_time }}</td>
+                    <td class="p-4 text-base font-medium text-gray-900 dark:text-white">{{ e.exam_time|format_time }}</td>
+                    <td class="p-4 text-base font-medium text-gray-900 dark:text-white"> <span class="{% if e.visibility == 'private' %}bg-gray-400 {% else %}bg-green-400{% endif %} text-white p-1"> {{ e.visibility }} </span> </td>
                     <td class="p-4 space-x-2 flex items-center">
                         <button type="button" class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-green-700 hover:bg-green-800 rounded-lg">
                             <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">

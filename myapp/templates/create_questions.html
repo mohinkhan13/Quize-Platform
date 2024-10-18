@@ -1,5 +1,5 @@
 {% extends "header.html" %}
-
+{% load custom_tags %}
 {% block main %}
 <div class="max-w-3xl mx-auto p-8 mb-10 bg-white border border-gray-300 rounded-lg shadow-lg dark:border-gray-700 dark:bg-gray-900">
     <div class="flex flex-col items-center text-center space-y-8">        
@@ -22,21 +22,20 @@
             
             <!-- Time Button -->
             <button type="button" class="inline-flex items-center justify-center w-full sm:w-auto px-6 py-3 text-md sm:text-lg font-semibold text-white bg-red-600 rounded-full shadow-lg hover:bg-red-700 focus:outline-none focus:ring-4 focus:ring-red-300 dark:bg-red-700 dark:hover:bg-red-600 dark:focus:ring-red-800 transition-transform transform hover:scale-105">
-                <i class="fas fa-clock mr-2"></i> Time: {{exam.exam_time}} Minutes
-            </button>
+                <i class="fas fa-clock mr-2"></i> Time: {{exam.exam_time|format_time}}            </button>
         </div>
     </div>
 </div>
 
 <div class="relative min-h-screen flex items-center justify-center ">
     <!-- Card Container -->
-    <div class="w-full max-w-2xl p-8 bg-white bg-opacity-30 backdrop-blur-lg rounded-3xl shadow-lg border border-gray-300 transform transition duration-500 hover:scale-105 dark:bg-gray-900 dark:border-gray-900">
+    <div class="w-full max-w-2xl bg-white bg-opacity-30 backdrop-blur-lg rounded-3xl shadow-lg border border-gray-300 transform transition duration-500 hover:scale-105 dark:bg-gray-900 dark:border-gray-900">
       
 
     {% if exam.question_created == False %}
         {% include "add_questions_card.html" %}
     {% elif  exam.question_created == True %}
-        
+        {% include "view_questions.html" %}
     {% endif %}
     </div>
 </div>

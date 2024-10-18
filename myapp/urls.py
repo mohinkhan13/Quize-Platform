@@ -15,4 +15,6 @@ urlpatterns = [
     path('my-all-exams/', my_all_exams, name='my-all-exams'),
     path('create-exam/', create_exam, name='create-exam'),
     path('create-questions/<int:id>/', create_questions, name='create-questions'),
+    path('publish-exam/<int:id>/', publish_exam, name='publish-exam'),
+    path('private-exam/<int:id>/', private_exam, name='private-exam'),
 ]

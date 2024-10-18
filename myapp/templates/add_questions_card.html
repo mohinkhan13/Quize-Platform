@@ -1,3 +1,4 @@
+{% if exam.number_of_questions is not None %}
 {% load custom_tags %}
 <form class="" method='POST' action="{% url "create-questions" exam.id%}">
     {% csrf_token %}
@@ -80,15 +81,15 @@
         <div id="warning-message" style="display: none; color: red; font-weight: bold;">
             Total number of questions is {{exam.number_of_questions}} cannot exceed.
         </div>
-        <h1 class="text-lg text-gray-700 dark:text-white">Mixed Type Questions</h1>
+        <h1 class="text-lg text-gray-700 dark:text-white py-4 px-2">Mixed Type Questions</h1>
 
         <!-- Input for number of MCQs -->
-        <div class="relative z-0 w-full mb-5">
+        <div class="relative z-0 w-full py-4 px-2">
             <input type="number" id="mcq-count" name="mcq_count" class="peer bg-transparent border-b-2 border-gray-300 text-gray-900 dark:text-white focus:outline-none focus:border-blue-600 block w-full p-2.5 appearance-none transition duration-200" placeholder="Enter the number of MCQ questions" required />
         </div>
 
         <!-- Input for number of True/False -->
-        <div class="relative z-0 w-full mb-5">
+        <div class="relative z-0 w-full py-4 px-2">
             <input type="number" id="tf-count" name="tf_count" class="peer bg-transparent border-b-2 border-gray-300 text-gray-900 dark:text-white focus:outline-none focus:border-blue-600 block w-full p-2.5 appearance-none transition duration-200" placeholder="Enter the number of True/False questions" required />
         </div>
 
@@ -106,3 +107,6 @@
       </button>
 
       </form>
+      {% else %}
+    <p>No questions available for this exam.</p>
+{% endif %}

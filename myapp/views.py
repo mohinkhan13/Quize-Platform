@@ -180,14 +180,14 @@ def create_exam(request):
 
         exam = Exam.objects.create(
             user=user,
-            exam_name = request.POST['exam_name'],
-            exam_subject = request.POST['exam_subject'],
-            exam_type = request.POST['exam_type'],
-            number_of_questions = request.POST['number_of_questions'],
-            time_setting = request.POST['time_setting'],
-            exam_time = request.POST['exam_time'],
+            exam_name=request.POST['exam_name'],
+            exam_subject=request.POST['exam_subject'],
+            exam_type=request.POST['exam_type'],
+            number_of_questions=int(request.POST['number_of_questions']),  # Convert to int
+            time_setting=request.POST['time_setting'],
+            exam_time=request.POST['exam_time'],
         )
-        return render(request, 'create_questions.html',{'exam':exam} )
+        return redirect('create-questions', exam.id)  # Redirect to create questions view
     return render(request, 'create_exam.html')
     
 def create_questions(request,id):
@@ -256,10 +256,8 @@ def create_questions(request,id):
                         correct_answer=(correct_answer == 'True')  # Convert to boolean
                     )
 
-            # Debugging Output
-            print("MCQ Questions:", mcq_questions)
-            print("True/False Questions:", tf_questions)
-
+            exam.question_created = True
+            exam.save()
             # After saving, you can redirect or return a response
             return redirect('create-questions', id=exam.id)
         
@@ -286,7 +284,8 @@ def create_questions(request,id):
                         option_d=option_d,
                         correct_answer=correct_answer,
                     )
-
+            exam.question_created = True
+            exam.save()
             return redirect('create-questions', id=exam.id)
         
         elif exam_type == 'TF':
@@ -304,7 +303,8 @@ def create_questions(request,id):
                         question=question.strip(),  # Ensure leading/trailing whitespace is removed
                         correct_answer=(correct_answer == 'True')  # Convert to boolean
                     )
-
+            exam.question_created = True
+            exam.save()
             return redirect('create-questions', id=exam.id)
 
 
@@ -324,13 +324,47 @@ def create_questions(request,id):
                         question=question,
                         correct_answer=correct_answer,
                     )
-
+            exam.question_created = True
+            exam.save()
             return redirect('create-questions', id=exam.id)
     else:
+        number_of_questions = exam.number_of_questions
+        mcqs = MCQQuestion.objects.filter(exam=exam)
+        tf = TrueFalseQuestion.objects.filter(exam=exam)
+        sa = ShortAnswerQuestion.objects.filter(exam=exam)
+
+        all_questions = []
         
-        number_of_questions = exam.number_of_questions 
+        # Add question_type attribute to each question
+        for question in mcqs:
+            question.question_type = 'MCQ'
+            all_questions.append(question)
+        
+        for question in tf:
+            question.question_type = 'TrueFalse'
+            all_questions.append(question)
+
+        for question in sa:
+            question.question_type = 'ShortAnswer'
+            all_questions.append(question)
+         
         context = {
-           'exam':exam,
-           'number_of_questions': number_of_questions,
+            'exam': exam,
+            'number_of_questions': number_of_questions,
+            'all_questions': all_questions,
         }
         return render(request, 'create_questions.html', context)
+    
+def publish_exam(request,id):
+    exam = Exam.objects.get(id=id)
+
+    exam.visibility = 'publish'
+    exam.save()
+    return redirect('create-questions', id=id)
+
+def private_exam(request,id):
+    exam = Exam.objects.get(id=id)
+
+    exam.visibility = 'private'
+    exam.save()
+    return redirect('create-questions', id=id)

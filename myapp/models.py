@@ -1,6 +1,6 @@
 from django.db import models
 from django.utils import timezone  # Import timezone for time-related fields
-
+import datetime
 # Custom User Model
 class CustomUser(models.Model):
     first_name = models.CharField(max_length=100)
@@ -47,9 +47,9 @@ class Exam(models.Model):
     exam_name = models.CharField(max_length=100)
     exam_subject = models.CharField(max_length=100)
     exam_type = models.CharField(max_length=80, choices=EXAM_TYPE_CHOICES)
-    number_of_questions = models.PositiveBigIntegerField()
+    number_of_questions = models.IntegerField(default=0)
     time_setting = models.CharField(max_length=50, choices=TIME_SETTING_CHOICES)
-    exam_time = models.TimeField()
+    exam_time = models.TimeField(default=datetime.time(0, 0))
     visibility = models.CharField(max_length=50,choices=VISIBILITY_CHOICES,default="private")
     question_created = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
