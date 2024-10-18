@@ -1,6 +1,11 @@
 from django.db import models
 from django.utils import timezone  # Import timezone for time-related fields
 import datetime
+from django.core.exceptions import ValidationError
+from PIL import Image as PILImage
+import os
+from django.conf import settings
+
 # Custom User Model
 class CustomUser(models.Model):
     first_name = models.CharField(max_length=100)
@@ -9,7 +14,9 @@ class CustomUser(models.Model):
     password = models.CharField(max_length=128, default="")
     email = models.EmailField(unique=True)  # Add unique constraint to email
     mobile = models.PositiveBigIntegerField()
+    profile = models.ImageField(upload_to='profile_pictures/',default="")
     address = models.TextField(default="")
+    dob = models.DateField(blank=True, null=True)
     city = models.CharField(max_length=100,default="")
     country = models.CharField(max_length=100,default="")
     is_login = models.BooleanField(default=False)
@@ -18,8 +25,39 @@ class CustomUser(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def save(self, *args, **kwargs):
+        # Optimize the image before saving if it exists
+        if self.profile:
+            try:
+                # Open the image using PIL
+                img = PILImage.open(self.profile)
+                img = img.convert('RGB')  # Convert image to RGB format
+                img.thumbnail((800, 800), PILImage.LANCZOS)  # Resize image to fit within 800x800
+
+                # Ensure the media directory exists
+                media_directory = os.path.join(settings.MEDIA_ROOT, 'profile_pictures')
+                os.makedirs(media_directory, exist_ok=True)
+
+                # Define the path to save the optimized image
+                optimized_image_path = os.path.join(media_directory, os.path.basename(self.profile.name))
+
+                # Save the optimized image
+                img.save(optimized_image_path, format='JPEG', quality=85)
+
+                # Update the profile field with the optimized image path
+                self.profile.name = os.path.basename(optimized_image_path)  # Set the file name for the ImageField
+                self.profile = optimized_image_path  # Assign the optimized image to the profile field
+
+            except FileNotFoundError:
+                # Handle the case where the original image might not be found
+                raise ValidationError("The original image file was not found.")
+            except Exception as e:
+                # Handle other exceptions
+                raise ValidationError(f"An error occurred while processing the image: {str(e)}")
+
+        # Handle last login time
         if self.is_login:
-            self.last_login = timezone.now()  # Update last_login with current time
+            self.last_login = timezone.now()
+
         super().save(*args, **kwargs)
 
     def __str__(self):

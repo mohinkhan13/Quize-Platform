@@ -13,7 +13,7 @@
         <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
             Create a Free Account
         </h2>
-        <form class="mt-8 space-y-6" method="POST" action="{% url "register" %}">
+        <form class="mt-8 space-y-6" method="POST" action="{% url "register" %}" enctype="multipart/form-data">
             {% csrf_token %}
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <!-- First Name -->
@@ -53,6 +53,14 @@
                     <label for="confirm-password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Confirm Password</label>
                     <input type="password" name="confirm_password" id="confirm-password" placeholder="••••••••" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" required="">
                 </div>
+                <div>
+                    <label for="profile" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Profile Picture</label>
+                    <input type="file" name="profile" id="profile" 
+                           accept="image/*"
+                           class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" 
+                           required="">
+                </div>
+                 
             </div>
             <!-- Terms & Conditions -->
             <div class="flex items-start">

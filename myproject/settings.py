@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+import os 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -63,6 +64,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'myapp.context_processors.custom_context',
             ],
         },
     },
@@ -121,7 +123,7 @@ STATICFILES_DIRS = [BASE_DIR / 'myapp/static']  # Add this line for your static 
 
 # Media files (user-uploaded content)
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'  # Directory where uploaded files will be stored
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 

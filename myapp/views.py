@@ -1,6 +1,7 @@
-from django.shortcuts import render,redirect
+from django.shortcuts import render,redirect,get_object_or_404
 from .models import *
 from django.contrib.auth.hashers import make_password, check_password
+from django.http import HttpResponseBadRequest
 
 def login_required(view_func, login_url='login.html', message=None):
     def _wrapped_view(request, *args, **kwargs):
@@ -16,8 +17,11 @@ def login_required(view_func, login_url='login.html', message=None):
 
 # Create your views here.
 def index(request):
-    # Your logic here
-    return render(request, 'index.html')
+    try:
+        user = CustomUser.objects.get(id=request.session['user_id'])        
+        return render(request, 'index.html',{'user':user})
+    except:
+        return render(request, 'index.html')
 
 def register(request):
     if request.method == 'POST':
@@ -49,6 +53,7 @@ def register(request):
                         email=email,
                         mobile=request.POST['mobile'],
                         password=hashed_password,
+                        profile=request.FILES['profile']
                     )
                     msg = "Registration Successful! Please login."
                     return render(request, 'login.html', {'msg': msg})
@@ -69,6 +74,9 @@ def login(request):
                 user.is_login = True
                 user.save()
                 request.session['user_id'] = user.id 
+                request.session['profile'] = user.profile.url
+                exams_count = Exam.objects.filter(user=user).count()
+                request.session['exams_count'] = exams_count
                 return render(request, 'index.html')
             else:
                 error = "Invalid Password"
@@ -92,6 +100,7 @@ def logout(request):
             user.is_login = False            
             user.save()  # Save the user status if needed
             del request.session['user_id']
+            del request.session['profile']
         except CustomUser.DoesNotExist:
             pass  # Handle the case if the user is not found    
     return redirect('login')  # Redirect to the login page
@@ -101,40 +110,91 @@ def setting(request):
         # POST request handling logic
         pass
     else:
-        context = {
-            # Add your context variables here
-        }
-        return render(request, 'setting.html', context)
+        try:
+            user = CustomUser.objects.get(id=request.session['user_id'])
+
+            context = {        
+                'user':user,
+            }
+            return render(request, 'setting.html', context)
+        except:
+            error = "You Need To login First"
+            return render(request, 'login.html', {'error':error})
     
 def profile(request):
-    if request.method == 'POST':
-        # POST request handling logic
-        pass
+    if request.method == 'POST':        
+        first_name = request.POST['first_name']
+        last_name = request.POST['last_name']
+        email = request.POST['email']
+        mobile = request.POST['mobile']
+        country = request.POST['country']
+        city = request.POST['city']
+        address = request.POST['address']
+        dob = request.POST['dob']
+        profile = request.FILES.get('profile')
+        print(profile)
+        user = CustomUser.objects.get(id=request.session['user_id'])
+
+        user.first_name = first_name
+        user.last_name = last_name
+        user.email = email
+        user.mobile = mobile
+        user.country = country
+        user.city = city
+        user.address = address
+        user.dob = dob
+        try:
+            user.profile = profile
+        except:
+            pass
+        user.save()
+        request.session['profile'] = user.profile.url
+        return redirect('profile')
+
     else:
-        context = {
-            # Add your context variables here
-        }
-        return render(request, 'profile.html', context)
+        try:
+            user = CustomUser.objects.get(id=request.session['user_id'])
+
+            context = {        
+                'user':user,
+            }
+            return render(request, 'profile.html', context)
+        except:
+            error = "You Need To login First"
+            return render(request, 'login.html', {'error':error})
     
 def change_password(request):
     if request.method == 'POST':
         # POST request handling logic
         pass
     else:
-        context = {
-            # Add your context variables here
-        }
-        return render(request, 'change_password.html', context)
+        try:
+            user = CustomUser.objects.get(id=request.session['user_id'])
+
+            context = {        
+                'user':user,
+            }
+            return render(request, 'change_password.html', context)
+        except:
+            error = "You Need To login First"
+            return render(request, 'login.html', {'error':error})
     
 def forgot_password(request):
     if request.method == 'POST':
         # POST request handling logic
         pass
     else:
-        context = {
-            # Add your context variables here
-        }
-        return render(request, 'forgot_password.html', context)
+        # Check if user is logged in based on session
+        user_id = request.session.get('user_id')
+        if user_id:
+            try:
+                CustomUser.objects.get(id=user_id)  # Check if user exists
+                logout(request)
+                return redirect('forgot-password')  # If user exists, redirect to logout or a different page
+            except CustomUser.DoesNotExist:
+                pass  # If user doesn't exist, proceed to render the forgot password page
+
+        return render(request, 'forgot_password.html')
     
 def verify_otp(request):
     if request.method == 'POST':
@@ -356,15 +416,36 @@ def create_questions(request,id):
         return render(request, 'create_questions.html', context)
     
 def publish_exam(request,id):
-    exam = Exam.objects.get(id=id)
+    try:
+        exam = Exam.objects.get(id=id)
 
-    exam.visibility = 'publish'
-    exam.save()
-    return redirect('create-questions', id=id)
+        exam.visibility = 'publish'
+        exam.save()
+        referer_url = request.META.get('HTTP_REFERER')
+        if referer_url:
+            return redirect(referer_url)
+        else:
+            return redirect('my-all-exam')
+    except Exam.DoesNotExist:
+        return HttpResponseBadRequest("Exam not found.")
+
 
 def private_exam(request,id):
-    exam = Exam.objects.get(id=id)
+    try:
+        exam = Exam.objects.get(id=id)
 
-    exam.visibility = 'private'
-    exam.save()
-    return redirect('create-questions', id=id)
+        exam.visibility = 'private'
+        exam.save()
+        referer_url = request.META.get('HTTP_REFERER')
+        if referer_url:
+            return redirect(referer_url)
+        else:
+            return redirect('my-all-exam') 
+    except Exam.DoesNotExist:
+        return HttpResponseBadRequest("Exam not found.")
+    
+def delete_exam(request, id):
+    # Check if the request method is POST to confirm deletion
+    exam = get_object_or_404(Exam, id=id)  # Retrieve the exam or return a 404 if not found
+    exam.delete()  # Delete the exam
+    return redirect('my-all-exams')  # Redirect to the exams list page (replace with your actual URL name)

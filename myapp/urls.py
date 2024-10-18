@@ -17,4 +17,5 @@ urlpatterns = [
     path('create-questions/<int:id>/', create_questions, name='create-questions'),
     path('publish-exam/<int:id>/', publish_exam, name='publish-exam'),
     path('private-exam/<int:id>/', private_exam, name='private-exam'),
+    path('delete-exam/<int:id>/', delete_exam, name='delete-exam'),
 ]
