@@ -18,4 +18,6 @@ urlpatterns = [
     path('publish-exam/<int:id>/', publish_exam, name='publish-exam'),
     path('private-exam/<int:id>/', private_exam, name='private-exam'),
     path('delete-exam/<int:id>/', delete_exam, name='delete-exam'),
+    path('all-exams/', all_exams, name='all-exams'),
+    path('view-exam/<int:id>/', view_exam, name='view-exam'),
 ]

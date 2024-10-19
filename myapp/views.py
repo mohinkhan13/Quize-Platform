@@ -2,6 +2,7 @@ from django.shortcuts import render,redirect,get_object_or_404
 from .models import *
 from django.contrib.auth.hashers import make_password, check_password
 from django.http import HttpResponseBadRequest
+from django.core.paginator import Paginator
 
 def login_required(view_func, login_url='login.html', message=None):
     def _wrapped_view(request, *args, **kwargs):
@@ -166,7 +167,24 @@ def profile(request):
 def change_password(request):
     if request.method == 'POST':
         # POST request handling logic
-        pass
+        user = CustomUser.objects.get(id=request.session['user_id'])
+        old_password = request.POST['old_password']
+        new_password = request.POST['new_password']
+        confirm_password = request.POST['confirm_password']
+
+        if check_password(old_password, user.password):
+            if new_password == confirm_password:
+                user.password = make_password(new_password)
+                user.save()
+                logout(request)
+                msg = "Password Changed Successfully. Please login again."
+                return render(request, 'login.html', {'msg': msg})            
+            else:
+                error = "Password and confirm password do not match"
+                return render(request, 'change_password.html', {'error': error})
+        else:
+            error = "Invalid Old Password"
+            return render(request, 'change_password.html', {'error': error})
     else:
         try:
             user = CustomUser.objects.get(id=request.session['user_id'])
@@ -219,15 +237,26 @@ def new_password(request):
 def my_all_exams(request):
     try:
         user = CustomUser.objects.get(id=request.session['user_id'])
-        exams = Exam.objects.filter(user=user)
+        exam = Exam.objects.filter(user=user)
+
+        # check for search query
+        search_query = request.GET.get('search')
+        if search_query:
+            exam = exam.filter(exam_name__icontains=search_query)  # Filter based on search query
+        # pagination
+        paginator = Paginator(exam, 10)
+        page_number = request.GET.get('page')
+        page_obj = paginator.get_page(page_number)
         context = {
-            'exams':exams,
+            'exam': page_obj,
+            'page_obj': page_obj,
+            'search_query': search_query,
         }
         return render(request, 'my_all_exams.html', context)
-    except:
-        exams = None
+    except Exam.DoesNotExist:
+        
         context = {
-            'exams':exams,
+            'exam': None            
         }
         return render(request, 'my_all_exams.html', context)
 
@@ -449,3 +478,18 @@ def delete_exam(request, id):
     exam = get_object_or_404(Exam, id=id)  # Retrieve the exam or return a 404 if not found
     exam.delete()  # Delete the exam
     return redirect('my-all-exams')  # Redirect to the exams list page (replace with your actual URL name)
+
+def all_exams(request):
+    user = CustomUser.objects.get(id=request.session['user_id'])
+    all_exams = Exam.objects.filter(visibility='publish').exclude(user=user)
+    print(all_exams)
+    context = {
+        'all_exams': all_exams,
+    }
+    return render(request, 'all_exam.html', context)
+def view_exam(request, id):
+    exam = get_object_or_404(Exam, id=id)
+    context = {
+        'exam': exam,
+    }
+    return render(request, 'view_exam.html', context)

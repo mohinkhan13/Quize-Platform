@@ -3,7 +3,7 @@
 {% block main %}
 <div class="p-6 mb-6 bg-white border border-gray-200 rounded-lg shadow-lg dark:border-gray-700 dark:bg-gray-800">
     <div class="flex flex-col items-center">
-        <img class="mb-4 rounded-full w-32 h-32" src="{{request.session.profile}}" alt="Profile picture">
+        <img class="mb-4 rounded-full object-contain w-32 h-32" src="{{request.session.profile}}" alt="Profile picture">
         <h3 class="mb-2 text-2xl font-semibold text-gray-900 dark:text-white">Profile Picture</h3>
         <p class="mb-4 text-sm text-gray-500 dark:text-gray-400">
             Upload a JPG, GIF, or PNG image. Max size: 800K.
