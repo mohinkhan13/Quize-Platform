@@ -46,15 +46,23 @@
             </div>
             <div class="dark:text-white">
                 <strong>Difficulty:</strong><br>
-                Hard
+                {{exam.difficulty}}
             </div>
         </div>
 
         <div class="action-buttons">
-            <a href="#" class="action-button">Take Exam</a>
+            <a href="#" class="action-button" id="start-exam-btn">Start Exam</a>
             <a href="{% url "all-exams" %}" class="action-button back-button">Back to Exams</a>
         </div>
-
+        <div id="confirmation-modal" class="modal">
+            <div class="modal-content">
+                <p>Are you ready for the challenge?</p>
+                <div class="modal-buttons">
+                    <button id="yes-btn" class="modal-btn">Yes</button>
+                    <button id="no-btn" class="modal-btn">No</button>
+                </div>
+            </div>
+        </div>
         <div class="social-buttons">
             <a href="#" class="social-button"><i class="fab fa-facebook-square"></i></a>
             <a href="#" class="social-button"><i class="fab fa-twitter-square"></i></a>
@@ -64,12 +72,12 @@
 
         <div class="info-section dark:bg-gray-700">
             <div class="dark:text-white">
-                <strong>View Count:</strong><br>
-                1500
+                <strong>Enroll</strong><br>
+                {{total_enrollment}}
             </div>
             <div class="dark:text-white">
                 <strong>Completion Rate:</strong><br>
-                85%
+                {{complation_rate}}%
             </div>
         </div>
 
@@ -112,5 +120,39 @@
         </div>
     </div>
 </section>
+<script>
+    // Get the modal element
+const modal = document.getElementById("confirmation-modal");
 
+// Get the button that opens the modal
+const startExamBtn = document.getElementById("start-exam-btn");
+
+// Get the Yes and No buttons
+const yesBtn = document.getElementById("yes-btn");
+const noBtn = document.getElementById("no-btn");
+
+// When the user clicks the "Start Exam" button, open the modal
+startExamBtn.onclick = function (event) {
+    event.preventDefault(); // Prevent the default action of the link
+    modal.style.display = "block";
+}
+const enrollUrl = "{% url 'enroll-exam' exam.id %}"; // Dynamically set URL
+// When the user clicks "Yes", redirect to the exam page
+yesBtn.onclick = function () {
+    window.location.href = enrollUrl ;// Replace with your exam start URL
+}
+
+// When the user clicks "No", close the modal
+noBtn.onclick = function () {
+    modal.style.display = "none";
+}
+
+// Optionally, close the modal when clicking outside of it
+window.onclick = function (event) {
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+}
+
+</script>
 {% endblock %}

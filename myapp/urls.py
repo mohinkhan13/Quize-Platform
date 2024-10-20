@@ -20,4 +20,8 @@ urlpatterns = [
     path('delete-exam/<int:id>/', delete_exam, name='delete-exam'),
     path('all-exams/', all_exams, name='all-exams'),
     path('view-exam/<int:id>/', view_exam, name='view-exam'),
+    path('exam/<int:id>/', enroll_exam, name='enroll-exam'),
+    path('quiz/get_question/<int:exam_id>/<int:index>/', get_question, name='get_question'),
+    path('quiz/submit/<int:exam_id>/', submit_answers, name='submit_answers'),
+    path('quiz/results/<int:result_id>/', results_view, name='results_view'),
 ]

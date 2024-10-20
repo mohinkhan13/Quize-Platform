@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exam Results</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500&display=swap" rel="stylesheet">
+    <link href="{% static 'css/results.css' %}" rel="stylesheet"> <!-- Link to your CSS file -->
+</head>
+<body>
+    <div class="results-container">
+        <h1>Exam Results</h1>
+        <div class="result-card">
+            <h2>{{ result.exam.name }}</h2>
+            <p><strong>User:</strong> {{ result.user.username }}</p>
+            <p><strong>Score:</strong> <span class="score">{{ result.score }}</span> / <span class="total">{{ result.answers|length }}</span></p>
+            <p><strong>Percentage:</strong> <span class="percentage">{{ result.percentage|floatformat:2 }}%</span></p>
+            <p><strong>Date Taken:</strong> {{ result.date_taken|date:"F j, Y, g:i a" }}</p>
+
+            <div class="status">
+                <strong>Status:</strong>
+                <span class="status-label {{ result.status|lower }}">{{ result.get_status_display }}</span>
+            </div>
+        </div>
+
+        <div class="answer-summary">
+            <h3>Answer Summary</h3>
+            <ul>
+                {% for question_index, answer in result.answers.items %}
+                    <li>
+                        <span>Question {{ question_index|add:1 }}:</span> 
+                        <strong>{{ answer }}</strong>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <a href="{% url 'all-exams' %}" class="back-button">Back to Exams</a>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="{% static 'js/results.js' %}"></script> <!-- Optional JS file -->
+</body>
+</html>

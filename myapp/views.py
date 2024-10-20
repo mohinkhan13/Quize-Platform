@@ -1,8 +1,9 @@
 from django.shortcuts import render,redirect,get_object_or_404
 from .models import *
 from django.contrib.auth.hashers import make_password, check_password
-from django.http import HttpResponseBadRequest
+from django.http import HttpResponseBadRequest,JsonResponse
 from django.core.paginator import Paginator
+import json
 
 def login_required(view_func, login_url='login.html', message=None):
     def _wrapped_view(request, *args, **kwargs):
@@ -272,7 +273,8 @@ def create_exam(request):
             exam_name=request.POST['exam_name'],
             exam_subject=request.POST['exam_subject'],
             exam_type=request.POST['exam_type'],
-            number_of_questions=int(request.POST['number_of_questions']),  # Convert to int
+            number_of_questions=int(request.POST['number_of_questions']),
+            difficulty=request.POST['difficulty'],
             time_setting=request.POST['time_setting'],
             exam_time=request.POST['exam_time'],
         )
@@ -489,7 +491,163 @@ def all_exams(request):
     return render(request, 'all_exam.html', context)
 def view_exam(request, id):
     exam = get_object_or_404(Exam, id=id)
+    total_enrollment = Enrollment.objects.filter(exam=exam).distinct().count()
+    finish_exam = Enrollment.objects.filter(exam=exam, is_completed=True).count()
+    
+    if total_enrollment > 0:
+        complation_rate = (finish_exam / total_enrollment) * 100
+    else:
+        complation_rate = 0
+
     context = {
         'exam': exam,
+        'total_enrollment': total_enrollment,
+        'complation_rate': complation_rate,
     }
     return render(request, 'view_exam.html', context)
+
+    
+def get_question(request, exam_id, index):
+    mcq_questions = MCQQuestion.objects.filter(exam_id=exam_id)
+    tf_questions = TrueFalseQuestion.objects.filter(exam_id=exam_id)
+    sa_questions = ShortAnswerQuestion.objects.filter(exam_id=exam_id)
+
+    total_questions = mcq_questions.count() + tf_questions.count() + sa_questions.count()
+    
+    if index < mcq_questions.count():
+        question = mcq_questions[index]
+        question_data = {
+            'question': question.question,
+            'type': 'MCQ',
+            'options': {
+                'a': question.option_a,
+                'b': question.option_b,
+                'c': question.option_c,
+                'd': question.option_d,
+            },
+        }
+    elif index < mcq_questions.count() + tf_questions.count():
+        question = tf_questions[index - mcq_questions.count()]
+        question_data = {
+            'question': question.question,
+            'type': 'TrueFalse',
+        }
+    else:
+        question = sa_questions[index - mcq_questions.count() - tf_questions.count()]
+        question_data = {
+            'question': question.question,
+            'type': 'ShortAnswer',
+        }
+
+    return JsonResponse({
+        'question': question_data['question'],
+        'type': question_data['type'],
+        'options': question_data.get('options', {}),
+        'id': question.id,
+        'isLastQuestion': index >= total_questions - 1
+    })
+
+def enroll_exam(request, id):
+    exam = get_object_or_404(Exam, id=id)
+
+    mcq = MCQQuestion.objects.filter(exam=exam)
+    tf = TrueFalseQuestion.objects.filter(exam=exam)
+    sa = ShortAnswerQuestion.objects.filter(exam=exam)
+
+    all_questions = []
+    total_questions = mcq.count() + tf.count() + sa.count()
+
+    for question in mcq:
+        all_questions.append({
+            'question': question.question,
+            'type': 'MCQ',
+            'options': {
+                'a': question.option_a,
+                'b': question.option_b,
+                'c': question.option_c,
+                'd': question.option_d,
+            },
+            'correct_answer': question.correct_answer,
+        })
+
+    for question in tf:
+        all_questions.append({
+            'question': question.question,
+            'type': 'TrueFalse',
+            'correct_answer': question.correct_answer,
+        })  
+
+    for question in sa:
+        all_questions.append({
+            'question': question.question,
+            'type': 'ShortAnswer',
+            'correct_answer': question.correct_answer,
+        })
+
+    context = {
+        'exam': exam,
+        'all_questions': all_questions,
+        'total_questions': total_questions,
+        'exam_time': exam.exam_time,
+        'time_setting': exam.time_setting,
+    }
+    return render(request, 'start_exam.html', context)
+
+def submit_answers(request, exam_id):
+    if request.method == 'POST':
+        print("Request received to submit answers.")  # Debug print
+        try:
+            answers = request.POST.get('answers')
+            print(f"Answers received: {answers}")  # Debug print
+            
+            if not answers:
+                return JsonResponse({'error': 'No answers provided'}, status=400)
+
+            answers_dict = json.loads(answers)  # Convert JSON string to dictionary
+            print(f"Parsed Answers: {answers_dict}")  # Debug print
+
+            # Fetching correct answers from database
+            correct_answers = {}
+            mcq_questions = MCQQuestion.objects.filter(exam_id=exam_id)
+            tf_questions = TrueFalseQuestion.objects.filter(exam_id=exam_id)
+            sa_questions = ShortAnswerQuestion.objects.filter(exam_id=exam_id)
+
+            for question in mcq_questions:
+                correct_answers[question.id] = question.correct_answer
+            
+            for question in tf_questions:
+                correct_answers[question.id] = question.correct_answer
+            
+            for question in sa_questions:
+                correct_answers[question.id] = question.correct_answer
+
+            score = 0
+
+            # Check answers against correct answers
+            for question_id, user_answer in answers_dict.items():
+                correct_answer = correct_answers.get(int(question_id))  # Ensure key is int
+                print(f"Checking Question ID: {question_id}, User Answer: {user_answer}, Correct Answer: {correct_answer}")
+
+                if str(user_answer) == str(correct_answer):  # Compare as strings
+                    score += 1
+
+            # Save ExamResult instance with the calculated score
+            user = CustomUser.objects.get(id=request.session['user_id'])
+            result = ExamResult(exam_id=exam_id, user=user, answers=answers_dict, score=score)
+            result.save()  # Save result to database
+
+            return JsonResponse({'result_id': result.id})  # Return the result ID
+        except json.JSONDecodeError as json_error:
+            print(f"JSONDecodeError: {str(json_error)}")  # Debug print
+            return JsonResponse({'error': 'Invalid JSON format: {}'.format(str(json_error))}, status=400)
+        except Exception as e:
+            print(f"Unexpected error: {str(e)}")  # Debug print
+            return JsonResponse({'error': str(e)}, status=500)
+    return JsonResponse({'error': 'Invalid request'}, status=400)
+
+
+
+
+def results_view(request, result_id):
+    result = get_object_or_404(ExamResult, id=result_id)  # Fetch the result based on ID
+    return render(request, 'results.html', {'result': result})  # Pass the result to your template

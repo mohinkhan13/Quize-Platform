@@ -90,11 +90,22 @@ class Exam(models.Model):
     exam_time = models.TimeField(default=datetime.time(0, 0))
     visibility = models.CharField(max_length=50,choices=VISIBILITY_CHOICES,default="private")
     question_created = models.BooleanField(default=False)
+    difficulty = models.CharField(max_length=100,choices=[('Easy', 'Easy'), ('Medium', 'Medium'), ('Hard', 'Hard')],default="Easy")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.exam_name
+
+class Enrollment(models.Model):
+    user = models.ForeignKey(CustomUser,on_delete=models.CASCADE)
+    exam = models.ForeignKey(Exam,on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_completed = models.BooleanField(default=False)
+    attempted = models.IntegerField(default=0)
+
+    def __str__(self):
+        return self.user.username
 
 class MCQQuestion(models.Model):
     exam = models.ForeignKey(Exam,on_delete=models.CASCADE)
@@ -123,3 +134,26 @@ class ShortAnswerQuestion(models.Model):
 
     def __str__(self):
         return self.question
+    
+class ExamResult(models.Model):
+    exam = models.ForeignKey(Exam, on_delete=models.CASCADE)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    answers = models.JSONField()  # Store user answers
+    score = models.IntegerField(default=0)  # Store the score or result
+    date_taken = models.DateTimeField(auto_now_add=True)
+    
+    STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('completed', 'Completed'),
+        ('reviewed', 'Reviewed'),
+    ]
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+
+    def percentage(self):
+        total_questions = len(self.answers)  # Assuming answers is a list of answers
+        if total_questions > 0:
+            return (self.score / total_questions) * 100
+        return 0
+
+    def __str__(self):
+        return f"Result for {self.exam.exam_name} by {self.user.username}"
