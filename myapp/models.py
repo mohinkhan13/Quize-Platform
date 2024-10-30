@@ -141,6 +141,7 @@ class ExamResult(models.Model):
     answers = models.JSONField()  # Store user answers
     score = models.IntegerField(default=0)  # Store the score or result
     date_taken = models.DateTimeField(auto_now_add=True)
+    attempt_no = models.IntegerField(default=0)
     
     STATUS_CHOICES = [
         ('pending', 'Pending'),

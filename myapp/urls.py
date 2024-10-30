@@ -24,4 +24,5 @@ urlpatterns = [
     path('quiz/get_question/<int:exam_id>/<int:index>/', get_question, name='get_question'),
     path('quiz/submit/<int:exam_id>/', submit_answers, name='submit_answers'),
     path('quiz/results/<int:result_id>/', results_view, name='results_view'),
+    path('enrolled-exams/', enrolled_exams, name='enrolled-exams'),
 ]

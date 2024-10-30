@@ -1,92 +1,132 @@
+/* Base styling */
 body {
     font-family: 'Poppins', sans-serif;
-    background-color: #f5f5f5;
+    background-color: #f4f6f9;
     margin: 0;
-    padding: 0;
+    padding: 20px;
 }
 
+/* Container for results */
 .results-container {
     max-width: 800px;
     margin: 0 auto;
+    background: #ffffff;
+    border-radius: 10px;
     padding: 20px;
-    background: #fff;
-    border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
 }
 
+/* Header */
 h1 {
     text-align: center;
     color: #333;
+    font-weight: 500;
     margin-bottom: 20px;
 }
 
+/* Result Card */
 .result-card {
+    background: #f9f9f9;
+    border-radius: 8px;
     padding: 20px;
-    border: 1px solid #ddd;
-    border-radius: 12px;
-    background-color: #f9f9f9;
     margin-bottom: 20px;
-    transition: box-shadow 0.3s;
+    box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.result-card:hover {
-    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+.result-card h2 {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
 }
 
-.status {
-    margin-top: 10px;
+.result-card p {
+    margin: 8px 0;
+    color: #555;
 }
 
+.score, .percentage {
+    font-weight: bold;
+    color: #333;
+}
+
+/* Grade styling */
+.grade {
+    font-weight: bold;
+    padding: 5px 10px;
+    border-radius: 4px;
+    background-color: #007bff;
+    color: #fff;
+}
+
+/* Status label */
 .status-label {
     font-weight: bold;
     padding: 5px 10px;
-    border-radius: 5px;
-    color: #fff;
+    border-radius: 4px;
 }
 
-.status-label.pending {
-    background-color: #ffcc00;
-}
-
-.status-label.completed {
+.status-label.passed {
     background-color: #28a745;
+    color: white;
 }
 
-.status-label.reviewed {
-    background-color: #007bff;
+.status-label.failed {
+    background-color: #dc3545;
+    color: white;
 }
 
-.answer-summary {
-    margin-top: 20px;
+/* Answer Summary */
+.answer-summary h3 {
+    font-size: 1.3rem;
+    margin-bottom: 15px;
+    color: #333;
 }
 
-.answer-summary ul {
-    list-style-type: none;
+ul {
+    list-style: none;
     padding: 0;
 }
 
-.answer-summary li {
-    background-color: #e9ecef;
-    padding: 10px;
-    margin: 5px 0;
-    border-radius: 5px;
-    transition: background-color 0.3s;
+.answer-item {
+    padding: 15px;
+    margin-bottom: 15px;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    background: #f4f6f9;
 }
 
-.answer-summary li:hover {
-    background-color: #d3d3d3;
+.correct {
+    border-left: 5px solid #28a745;
 }
 
+.incorrect {
+    border-left: 5px solid #dc3545;
+}
+
+.selected-answer, .correct-answer {
+    margin-top: 10px;
+}
+
+.correct-label {
+    color: #28a745;
+    font-weight: bold;
+}
+
+.incorrect-label {
+    color: #dc3545;
+    font-weight: bold;
+}
+
+/* Back button */
 .back-button {
-    display: inline-block;
-    margin-top: 20px;
-    padding: 12px 24px;
+    display: block;
+    width: 100%;
+    padding: 10px;
+    text-align: center;
     background-color: #007bff;
-    color: #fff;
+    color: white;
     text-decoration: none;
     border-radius: 5px;
     font-weight: bold;
-    transition: background-color 0.3s;
 }
 
 .back-button:hover {

@@ -583,6 +583,13 @@ def enroll_exam(request, id):
             'type': 'ShortAnswer',
             'correct_answer': question.correct_answer,
         })
+    user = CustomUser.objects.get(id=request.session['user_id'])
+    try:
+        enroll = Enrollment.objects.get(user=user, exam=exam)
+        enroll.attempted += 1
+        enroll.save()
+    except Enrollment.DoesNotExist:
+        Enrollment.objects.create(user=user, exam=exam, attempted=1)
 
     context = {
         'exam': exam,
@@ -633,7 +640,18 @@ def submit_answers(request, exam_id):
 
             # Save ExamResult instance with the calculated score
             user = CustomUser.objects.get(id=request.session['user_id'])
-            result = ExamResult(exam_id=exam_id, user=user, answers=answers_dict, score=score)
+            exam = Exam.objects.get(id=exam_id)
+            enroll = Enrollment.objects.get(user=user, exam=exam)
+            enroll.is_completed = True
+            enroll.save()
+            result = ExamResult(
+                exam_id=exam_id, 
+                user=user, 
+                answers=answers_dict, 
+                score=score,
+                attempt_no = enroll.attempted,
+                status = 'completed'
+                )
             result.save()  # Save result to database
 
             return JsonResponse({'result_id': result.id})  # Return the result ID
@@ -651,3 +669,8 @@ def submit_answers(request, exam_id):
 def results_view(request, result_id):
     result = get_object_or_404(ExamResult, id=result_id)  # Fetch the result based on ID
     return render(request, 'results.html', {'result': result})  # Pass the result to your template
+
+def enrolled_exams(request):
+    user = CustomUser.objects.get(id=request.session['user_id'])
+    results = ExamResult.objects.filter(user=user)
+    return render(request, 'enrolled_exams.html', {'results': results})
